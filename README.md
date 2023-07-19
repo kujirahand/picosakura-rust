@@ -1,6 +1,6 @@
 # picosakura-rust
 
-MML Compiler Sakura - picosakura player rust version
+MML Compiler Sakura Commandline player with SoundFont
 
 ## Functions
 
@@ -8,3 +8,18 @@ MML Compiler Sakura - picosakura player rust version
 - MML Compiler
   - MML to MIDI
   - MML to WAV
+
+## Usages
+
+Play MML file
+
+```
+picosakura test.mml
+```
+
+Render to WAV file
+
+```
+picosakura test.mml --wav test.wav
+```
+
