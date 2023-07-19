@@ -1,6 +1,22 @@
 # picosakura-rust
 
-MML Compiler Sakura Commandline player with SoundFont
+Picosakura is an MML player for Sakuramml.
+MML stands for Music Macro Language.
+Picosakura use SoundFont to play MML files.
+This is command line version.
+
+- [WEB Site](https://sakuramml.com/picosakura/index.php)
+- MML Compiler
+  - [MML compiler sakuramml-rust](https://github.com/kujirahand/sakuramml-rust)
+- Browser version
+  - [Picosakura](https://github.com/kujirahand/picosakura)
+
+## Install
+
+This is command line tool.
+Please download binary from [release(zip file)](https://github.com/kujirahand/picosakura-rust/releases).
+
+- Windows / macOS
 
 ## Functions
 

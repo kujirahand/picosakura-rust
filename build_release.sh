@@ -11,9 +11,11 @@ cargo build --release
 
 # copy files
 mkdir -p $TARGET
+mkdir -p $TARGET/fonts
+mkdir -p $TARGET/samples
 cp ./target/release/picosakura $TARGET/
-cp -r ./fonts $TARGET/fonts
-cp -r ./samples $TARGET/samples
+cp ./fonts/* $TARGET/fonts/
+cp ./samples/* $TARGET/samples/
 cp README.md $TARGET/
 cp LICENSE $TARGET/
 
