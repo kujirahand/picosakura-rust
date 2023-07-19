@@ -1,51 +1,108 @@
-use clap::Parser;
-
 use rustysynth::{SynthesizerSettings, Synthesizer, SoundFont, MidiFile, MidiFileSequencer};
 use tinyaudio::prelude::*;
 use sakuramml;
+use std::env;
 
 const SAMPLE_RATE: usize = 44_100;
 const DEFUALT_SOUNDFONT: &str = "fonts/TimGM6mb.sf2";
 
-#[derive(Parser, Debug)]
-struct Args {
-    #[arg(short, long)]
-    soundfont: Option<String>,
-    #[arg(short, long, help="output midi file")]
-    midi: Option<String>,
-    #[arg(short, long, help="output wav file")]
-    wav: Option<String>,
-    #[arg(short, long, help="debug level 0:none 1:info")]
-    debug: Option<u32>,
-    #[arg(help="input mml file")]
-    input: String,
-}
-
 fn main() {
-    let args = Args::parse();
-    println!("{:?}", args);
-    let input = args.input.clone();
-    if input == "" {
-        println!("mml file is not specified");
+    let args: Vec<String> = env::args().collect();
+    // options
+    let mut input = "".to_string();
+    let mut soundfont = "".to_string();
+    let mut midi = "".to_string();
+    let mut wav = "".to_string();
+    let mut debug = false;
+    let mut version = false;
+    let mut wav_mode = false;
+    // check args
+    let mut i = 1;
+    while i < args.len() {
+        let arg = args[i].clone();
+        if arg == "-h" || arg == "--help" {
+            println!("usage: picosakura [options] [mmlfile]");
+            println!("options:");
+            println!("  -h, --help      show this help");
+            println!("  -v, --version   show version");
+            println!("  -d, --debug     show debug log");
+            println!("  -s, --soundfont [soundfont]   specify soundfont file");
+            println!("  -m, --midi      [midifile]    specify midi file");
+            println!("  -w, --wav       [wavfile]     specify wav file");
+            return;
+        }
+        if arg == "-v" || arg == "--version" {
+            version = true;
+            break;
+        }
+        if arg == "-d" || arg == "--debug" {
+            debug = true;
+            continue;
+        }
+        if arg == "-m" || arg == "--midi" {
+            i += 1;
+            if i < args.len() {
+                midi = args[i].clone();
+                i += 1;
+            }
+            continue;
+        }
+        if arg == "-w" || arg == "--wav" {
+            wav_mode = true;
+            i += 1;
+            if i < args.len() {
+                wav = args[i].clone();
+                i += 1;
+            }
+            continue;
+        }
+        if arg == "-s" || arg == "--soundfont" {
+            i += 1;
+            if i < args.len() {
+                soundfont = args[i].clone();
+                i += 1;
+            }
+            continue;
+        }
+        if input == "" {
+            input = arg.clone();
+        }
+        i += 1;
+    }
+    // version
+    if version {
+        println!("picosakura v{}", sakuramml::get_version());
         return;
     }
-    let soundfont = args.soundfont.unwrap_or(DEFUALT_SOUNDFONT.to_string());
-    println!("soundfont={}", soundfont);
-    let midi = args.midi.unwrap_or_else(|| {
-        let mut s = input.clone();
-        s.push_str(".mid");
-        s = s.replacen(".mml.mid", ".mid", 1);
-        s
-    });
-    let debug = args.debug.unwrap_or(0);
-    match args.wav {
-        Some(wavfile) => {
-            save_to_wav(&input, &midi, &wavfile, &soundfont, debug);
-            return;
-        },
-        None => {}
-    };
-    play_audio(&input, &midi, &soundfont, debug);
+    // check input
+    if input == "" {
+        println!("Usage: picosakura [options] [mmlfile]");
+        println!("[INFO] To get more information, please specify `--help`");
+        return;
+    }
+    if soundfont == "" {
+        soundfont = DEFUALT_SOUNDFONT.to_string();
+    }
+    println!("[INFO] soundfont={}", soundfont);
+    if midi == "" {
+        midi = input.clone();
+        midi.push_str(".mid");
+        midi = midi.replacen(".mml.mid", ".mid", 1);
+    }
+    // debug
+    let debug_level = if debug { 1 } else { 0 };
+    // wav
+    if wav == "" {
+        wav = input.clone();
+        wav.push_str(".wav");
+        wav = wav.replacen(".mml.wav", ".wav", 1);
+    }
+    if wav_mode {
+        save_to_wav(&input, &midi, &wav, &soundfont, debug_level);
+        return;
+    }
+    // play
+    play_audio(&input, &midi, &soundfont, debug_level);
 }
 
 fn compile_to_midi(mmlfile: &str, midifile: &str, debug_level: u32) -> bool {

@@ -23,3 +23,19 @@ Render to WAV file
 picosakura test.mml --wav test.wav
 ```
 
+## Commandline Options
+
+```
+Usage: picosakura [OPTIONS] <INPUT>
+
+Arguments:
+  <INPUT>  input mml file
+
+Options:
+  -s, --soundfont <SOUNDFONT>
+  -m, --midi <MIDI>            output midi file
+  -w, --wav <WAV>              output wav file
+  -d, --debug <DEBUG>          debug level 0:none 1:info
+  -h, --help                   Print help
+```
+

@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "4.3.15", features = ["derive"] }
 rustysynth = "1.2.0"
 sakuramml = "0.1.22"
 tinyaudio = "0.1.2"
