@@ -20,7 +20,13 @@ picosakura test.mml
 Render to WAV file
 
 ```
-picosakura test.mml --wav test.wav
+picosakura test.mml --wav
+```
+
+Set SoundFont file
+
+```
+picosakura test.mml --soundfont test.sf2
 ```
 
 ## Commandline Options
