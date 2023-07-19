@@ -3,6 +3,7 @@ use tinyaudio::prelude::*;
 use sakuramml;
 use std::env;
 
+const VERSION: &str = "0.1.0";
 const SAMPLE_RATE: usize = 44_100;
 const DEFUALT_SOUNDFONT: &str = "fonts/TimGM6mb.sf2";
 
@@ -71,7 +72,8 @@ fn main() {
     }
     // version
     if version {
-        println!("picosakura v{}", sakuramml::get_version());
+        println!("- picosakura v{}", VERSION);
+        println!("  - compiler v{}", sakuramml::get_version());
         return;
     }
     // check input
