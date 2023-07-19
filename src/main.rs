@@ -173,8 +173,10 @@ fn play_audio(mmlfile: &str, midifile: &str, soundfont: &str, debug_level: u32) 
     let _device = run_output_device(params, {
         move |data| {
             // 再生位置を標準出力に表示
-            println!("{:03.1}/{} [Enter]で終了", sequencer.get_position(), 
-                midi_file.get_length() as u32);
+            let esc = "\x1b[1A\x1b[30D";
+            print!("{}", esc);
+            println!("play: {:03.1}/{:03.1}", sequencer.get_position(), 
+                midi_file.get_length());
             // シーケンサーによる波形生成 --- (*9)
             let mut clock = 0;
             sequencer.render(&mut left_buf[..], &mut right_buf[..]);
