@@ -2,11 +2,22 @@
 name = "picosakura"
 version = "0.1.0"
 edition = "2021"
+authors = ["kujirahand <web@kujirahand.com>"]
+description = "Picosakura mml player"
+license = "MIT"
+repository = "https://github.com/kujirahand/picosakura-rust"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
 rustysynth = "1.2.0"
 sakuramml = "0.1.22"
 tinyaudio = "0.1.2"
-wav_io = "0.1.8"
+wav_io = "0.1.11"
+wasm-bindgen = "0.2"
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = "z"

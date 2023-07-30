@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>MML to WAV</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+<body>
+<script type="module">
+    // WebAssemblyを読み込む
+    // import init, { PicoResult, make_wav } from './pkg/picosakura.js';
+    import init, { PicoResult, make_wav } from 'https://unpkg.com/picosakura@0.1.0/picosakura.js';
+    // Promiseの仕組みでライブラリを読み込む
+    init().then(() => {
+        console.log('@loaded')
+        const btnSave = document.getElementById('btnSave');
+        const msg = document.getElementById('msg');
+        btnSave.removeAttribute('disabled');
+        msg.innerHTML = '';
+    }).catch(err => {
+        console.error(err);
+        document.getElementById('msg').innerHTML = '[LOAD_ERROR]' + tohtml(err.toString())
+    });
+    function tohtml(s) {
+        s = s.replace(/&/g, '&amp;')
+        s = s.replace(/</g, '&lt;')
+        s = s.replace(/>/g, '&gt;')
+        s = s.replace(/\n/g, '<br>\n')
+        return s
+    }
+    async function makeWav(mml) {
+        try {
+            const soundfont = await loadBinary('./fonts/TimGM6mb.sf2');
+            console.log('@mml=', mml);
+            const result = make_wav(mml, new Uint8Array(soundfont));
+            if (!result.result) {
+                const log = result.get_log()
+                document.getElementById('msg').innerHTML = tohtml(log)
+                return null
+            }
+            // log
+            const log = result.get_log();
+            document.getElementById('msg').innerHTML = tohtml(log)
+            // export
+            const wav = result.get_bin();
+            console.log('@wav=', wav);
+            const dataview = new DataView(wav.buffer);
+            const audioBlob = new Blob([dataview], {type: 'audio/wav'});
+            console.log('@audioBlob=', audioBlob);
+            console.log('@audioBlob.size=', audioBlob.size);
+            let url = window.URL.createObjectURL(audioBlob);
+            console.log('@url=', url);
+            return url;
+        } catch (err) {
+            console.error(err);
+            document.getElementById('msg').innerHTML = '[SYSTEM_ERROR]' + tohtml(err.toString())
+        }
+    }
+    // load
+    async function loadBinary(url) {
+        const resp = await fetch(url);
+        return await resp.arrayBuffer();
+    }
+    // button
+    const downloadLink = document.getElementById('download');
+    btnSave.onclick = async () => {
+        const mml = document.getElementById('mml').value;
+        const url = await makeWav(mml);
+        if (url === null) {
+            downloadLink.href = '#';
+            return;
+        }
+        downloadLink.href = url;
+        downloadLink.download = 'audio.wav';
+        downloadLink.click();
+    };
+    </script>
+    <div>
+        <h1>Picosakura to WAV</h1>
+        <div>MML:<br><textarea id="mml" rows="10" cols="80">o4v120 cdefgfed</textarea></div>
+        <div><button id="btnSave" disabled="disabled">Download to WAV</button></div>
+        <div id="msg">Now loading...</div>
+        <a id="download"></a>
+    </div>
+</body>
+</html>
