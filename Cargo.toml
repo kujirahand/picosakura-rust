@@ -12,7 +12,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustysynth = "1.2.0"
-sakuramml = "0.1.22"
+sakuramml = "0.1.23"
 tinyaudio = "0.1.2"
 wav_io = "0.1.11"
 wasm-bindgen = "0.2"
