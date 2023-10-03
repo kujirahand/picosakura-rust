@@ -2,6 +2,8 @@ use rustysynth::{SynthesizerSettings, Synthesizer, SoundFont, MidiFile, MidiFile
 use tinyaudio::prelude::*;
 use sakuramml;
 use std::env;
+use std::fs::File;
+use std::io::Write;
 
 const VERSION: &str = "0.1.0";
 const SAMPLE_RATE: usize = 44_100;
@@ -17,6 +19,9 @@ fn main() {
     let mut debug = false;
     let mut version = false;
     let mut wav_mode = false;
+    let mut ogg_mode = false;
+    let mut bits_per_sample: usize = 32;
+    let mut sample_rate: usize = SAMPLE_RATE;
     // check args
     let mut i = 1;
     while i < args.len() {
@@ -30,6 +35,9 @@ fn main() {
             println!("  -s, --soundfont [soundfont]   specify soundfont file");
             println!("  -m, --midi      [midifile]    specify midi file");
             println!("  -w, --wav       [wavfile]     specify wav file");
+            println!("  -o, --ogg       [oggfile]     specify ogg file");
+            println!("  -b, --bit       8/16/24/32    specify wav bit");
+            println!("  -r, --sample_rate [rate]      sample rate");
             return;
         }
         if arg == "-v" || arg == "--version" {
@@ -57,12 +65,31 @@ fn main() {
             }
             continue;
         }
+        if arg == "-o" || arg == "--ogg" {
+            ogg_mode = true;
+            i += 1;
+            if i < args.len() {
+                wav = args[i].clone();
+                i += 1;
+            }
+            continue;
+        }
         if arg == "-s" || arg == "--soundfont" {
             i += 1;
             if i < args.len() {
                 soundfont = args[i].clone();
                 i += 1;
             }
+            continue;
+        }
+        if arg == "-b" || arg == "--bit" {
+            i += 1;
+            bits_per_sample = args[i].parse::<usize>().unwrap_or(32);
+            continue;
+        }
+        if arg == "-s" || arg == "--sample_rate" {
+            i += 1;
+            sample_rate = args[i].parse::<usize>().unwrap_or(SAMPLE_RATE);
             continue;
         }
         if input == "" {
@@ -96,11 +123,17 @@ fn main() {
     // wav
     if wav == "" {
         wav = input.clone();
-        wav.push_str(".wav");
-        wav = wav.replacen(".mml.wav", ".wav", 1);
+        if wav_mode {
+            wav.push_str(".wav");
+            wav = wav.replacen(".mml.wav", ".wav", 1);
+        }
+        if ogg_mode {
+            wav.push_str(".ogg");
+            wav = wav.replace(".mml.ogg", ".ogg");
+        }
     }
-    if wav_mode {
-        save_to_wav(&input, &midi, &wav, &soundfont, debug_level);
+    if wav_mode || ogg_mode {
+        save_to_wav(&input, &midi, &wav, &soundfont, debug_level, sample_rate, bits_per_sample, ogg_mode);
         return;
     }
     // play
@@ -196,7 +229,7 @@ fn play_audio(mmlfile: &str, midifile: &str, soundfont: &str, debug_level: u32) 
     std::io::stdin().read_line(&mut String::new()).unwrap();
 }
 
-fn save_to_wav(mmlfile: &str, midifile: &str, wavfile: &str, soundfont: &str, debug_level: u32) {
+fn save_to_wav(mmlfile: &str, midifile: &str, wavfile: &str, soundfont: &str, debug_level: u32, sample_rate: usize, sample_bit: usize, ogg_mode: bool) {
     // MMLをMIDIに変換
     let com_result = compile_to_midi(mmlfile, midifile, debug_level);
     if !com_result { return; }
@@ -228,9 +261,42 @@ fn save_to_wav(mmlfile: &str, midifile: &str, wavfile: &str, soundfont: &str, de
         samples[i*2+1] = right_buf[i];
     }
     // WAVファイルへ保存
-    println!("[INFO] write to wav file: {}", wavfile);
-    let mut wav_head = wav_io::new_stereo_header();
-    wav_head.sample_rate = SAMPLE_RATE as u32;
-    let mut wav_out = std::fs::File::create(wavfile).unwrap();
-    wav_io::write_to_file(&mut wav_out, &wav_head, &samples).unwrap();
+    if ogg_mode == false {
+        println!("[INFO] write to wav file: {}", wavfile);
+        let mut wav_head = wav_io::new_stereo_header();
+        wav_head.sample_rate = sample_rate as u32;
+        wav_head.bits_per_sample = sample_bit as u16;
+        if sample_bit == 8 {
+            wav_head.set_int_format();
+        } else if sample_bit == 16 {
+            wav_head.set_int_format();
+        } else {
+            wav_head.bits_per_sample = 32;
+        }
+        // write wav file
+        let mut wav_out = std::fs::File::create(wavfile).unwrap();
+        wav_io::write_to_file(&mut wav_out, &wav_head, &samples).unwrap();
+    } else {
+        // ogg mode
+        // OGGファイルへ保存
+        let ogg_file: String = format!("{}.ogg", wavfile.replace(".wav", ""));
+        println!("[INFO] write to ogg file: {}", ogg_file);
+        let samples = wav_io::resample::linear(samples, 2, sample_rate as u32, 16000).try_into().unwrap(); // wav_io::resample
+        let samples = convert_samples_f32_to_i16(&samples);
+        let opus = ogg_opus::encode::<16000, 2>(&samples).unwrap();
+
+        // ファイルを書き込みモードで開く
+        let mut file = File::create(&ogg_file).unwrap();
+        // Vec<u8>のデータをファイルに書き込む
+        file.write_all(&opus).unwrap();
+    }
+}
+
+/// convert f32 to i16 samples
+pub fn convert_samples_f32_to_i16(samples: &Vec<f32>) -> Vec<i16> {
+    let mut samples_i16 = vec![];
+    for v in samples {
+        samples_i16.push((*v * std::i16::MAX as f32) as i16);
+    }
+    samples_i16
 }
