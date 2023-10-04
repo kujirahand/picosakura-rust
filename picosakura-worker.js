@@ -1,9 +1,12 @@
 //
 // picosakura-worker.js
 //
+
+console.log('@picosakura-worker.js')
+
 const URL_SOUNDFONT = './fonts/TimGM6mb.sf2';
 
-import init, { PicoResult, make_wav, make_wav_custom } from './pkg/picosakura.js';
+import init, { PicoResult, make_wav, make_wav_custom } from './pkg/picosakura.js?v=3';
 init().then(() => {
     console.log('@loaded')
     self.postMessage({ type: 'loaded' });
@@ -11,6 +14,7 @@ init().then(() => {
     console.error(err);
     self.postMessage({ type: 'error', data: err.toString() });
 });
+
 //
 // worker event
 //
@@ -52,6 +56,7 @@ async function makeWav(mml, out_format) {
         format = 'ogg'
     }
     console.log('make_wav_custom(mml soundfont', sample_rate, bit_depth, format, ');');
+    // const result = make_wav(mml, new Uint8Array(soundfont));
     const result = make_wav_custom(mml, new Uint8Array(soundfont), sample_rate, bit_depth, format);
     if (!result.result) {
         const log = result.get_log()

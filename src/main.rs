@@ -5,6 +5,9 @@ use std::env;
 use std::fs::File;
 use std::io::Write;
 
+mod ogg_encoder;
+mod ogg_common;
+
 const VERSION: &str = "0.1.0";
 const SAMPLE_RATE: usize = 44_100;
 const DEFUALT_SOUNDFONT: &str = "fonts/TimGM6mb.sf2";
@@ -33,9 +36,9 @@ fn main() {
             println!("  -v, --version   show version");
             println!("  -d, --debug     show debug log");
             println!("  -s, --soundfont [soundfont]   specify soundfont file");
-            println!("  -m, --midi      [midifile]    specify midi file");
-            println!("  -w, --wav       [wavfile]     specify wav file");
-            println!("  -o, --ogg       [oggfile]     specify ogg file");
+            println!("  -m, --midi      [ooo.mid]     specify midi file");
+            println!("  -w, --wav       [ooo.wav]     specify wav file");
+            println!("  -o, --orpus     [ooo.opus]    specify ogg-orpus file");
             println!("  -b, --bit       8/16/24/32    specify wav bit");
             println!("  -r, --sample_rate [rate]      sample rate");
             return;
@@ -65,7 +68,7 @@ fn main() {
             }
             continue;
         }
-        if arg == "-o" || arg == "--ogg" {
+        if arg == "-o" || arg == "--orpus" {
             ogg_mode = true;
             i += 1;
             if i < args.len() {
@@ -128,8 +131,8 @@ fn main() {
             wav = wav.replacen(".mml.wav", ".wav", 1);
         }
         if ogg_mode {
-            wav.push_str(".ogg");
-            wav = wav.replace(".mml.ogg", ".ogg");
+            wav.push_str(".orpus");
+            wav = wav.replace(".mml.orpus", ".orpus");
         }
     }
     if wav_mode || ogg_mode {
@@ -279,14 +282,14 @@ fn save_to_wav(mmlfile: &str, midifile: &str, wavfile: &str, soundfont: &str, de
     } else {
         // ogg mode
         // OGGファイルへ保存
-        let ogg_file: String = format!("{}.ogg", wavfile.replace(".wav", ""));
-        println!("[INFO] write to ogg file: {}", ogg_file);
+        // let ogg_file: String = format!("{}.orpus", wavfile.replace(".wav", ""));
+        println!("[INFO] write to ogg-orpus file: {}", wavfile);
         let samples = wav_io::resample::linear(samples, 2, sample_rate as u32, 16000).try_into().unwrap(); // wav_io::resample
         let samples = convert_samples_f32_to_i16(&samples);
-        let opus = ogg_opus::encode::<16000, 2>(&samples).unwrap();
+        let opus = ogg_encoder::encode::<16000, 2>(&samples).unwrap();
 
         // ファイルを書き込みモードで開く
-        let mut file = File::create(&ogg_file).unwrap();
+        let mut file = File::create(&wavfile).unwrap();
         // Vec<u8>のデータをファイルに書き込む
         file.write_all(&opus).unwrap();
     }

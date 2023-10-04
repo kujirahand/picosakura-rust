@@ -9,6 +9,7 @@
 <script type="module">
     // worker
     const worker = new Worker('./picosakura-worker.js', { type: "module" });
+    // const worker = {addEventListener: () => {}};
     worker.addEventListener('message', (event) => {
         console.log("Data from worker received: ", event);
         const btnSave = document.getElementById('btnSave');
@@ -96,9 +97,9 @@
         <h1>Picosakura to WAV</h1>
         <div>MML:<br><textarea id="mml" rows="10" cols="80">o4v120 cdefgfed</textarea></div>
         <div>Format: <select id="selectFormat">
-            <option value="ogg" selected>OGG</option>
+            <option value="ogg">Ogg-Orpus</option>
             <option value="wav16">WAV 16bit</option>
-            <option value="wav">WAV 32bit</option>
+            <option value="wav" selected>WAV 32bit</option>
         </select></div>
         <div><button id="btnSave" disabled="disabled">Download Audio</button></div>
         <div id="msg">Now loading...</div>
@@ -107,8 +108,8 @@
     <div>&nbsp;</div>
     <div style="padding: 12px; border: 1px solid silver; background-color: #f0f0f0;">
         <div style="font-size: 0.8em;">
-            テキストボックスにMMLを記入し、上記の「Download Audio」ボタンを押すと、OGG/WAVファイルをダウンロードできます。<br>
-            ブラウザ上でOGG/WAVのレンダリングするので書き出しには時間がかかります。
+            テキストボックスにMMLを記入し、上記の「Download Audio」ボタンを押すと、Ogg-Orpus/WAVファイルをダウンロードできます。<br>
+            ブラウザ上でオーディオのレンダリングするので書き出しには時間がかかります。
         </div>
     </div>
 </body>
