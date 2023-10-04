@@ -25,6 +25,7 @@
         if (event.data.type === 'error') {
             const errMsg = '' + event.data.data;
             msg.innerHTML = '[WORKER_ERROR]' + tohtml(errMsg);
+            btnSave.disabled = false;
         }
         if (event.data.type === 'makeWav:ok') {
             const {wav, log} = event.data.data;

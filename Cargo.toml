@@ -16,14 +16,8 @@ sakuramml = "0.1.25"
 tinyaudio = "0.1.2"
 wav_io = "0.1.12"
 wasm-bindgen = "0.2"
-getrandom = { version = "0.2", features = ["js"] }
-
 # for ogg-opus-support
-ogg-opus = "0.1.2"
-audiopus = "^0.2" 
-ogg = "^0.8"
-byteorder = "^1.3"
-parking_lot = { version = "^0.11", features = ["wasm-bindgen"]}
+ogg-opus-wasm = "0.1.2"
 
 [profile.release]
 lto = true

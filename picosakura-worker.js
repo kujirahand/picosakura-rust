@@ -2,11 +2,9 @@
 // picosakura-worker.js
 //
 
-console.log('@picosakura-worker.js')
-
 const URL_SOUNDFONT = './fonts/TimGM6mb.sf2';
 
-import init, { PicoResult, make_wav, make_wav_custom } from './pkg/picosakura.js?v=3';
+import init, { PicoResult, make_wav, make_wav_custom } from './pkg/picosakura.js';
 init().then(() => {
     console.log('@loaded')
     self.postMessage({ type: 'loaded' });
