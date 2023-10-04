@@ -2,13 +2,13 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>MML to WAV</title>
+        <title>Picosakura WAV Converter</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
 <body>
 <script type="module">
     // worker
-    const worker = new Worker('./picosakura-worker.js', { type: "module" });
+    const worker = new Worker('./wav_converter-worker.js', { type: "module" });
     // const worker = {addEventListener: () => {}};
     worker.addEventListener('message', (event) => {
         console.log("Data from worker received: ", event);
@@ -95,10 +95,10 @@
     });
     </script>
     <div>
-        <h1>Picosakura to WAV</h1>
+        <h1>Picosakura WAV Converter (MML to WAV)</h1>
         <div>MML:<br><textarea id="mml" rows="10" cols="80">o4v120 cdefgfed</textarea></div>
         <div>Format: <select id="selectFormat">
-            <option value="ogg">Ogg-Orpus</option>
+            <!-- <option value="ogg">Ogg-Orpus</option> -->
             <option value="wav16">WAV 16bit</option>
             <option value="wav" selected>WAV 32bit</option>
         </select></div>
@@ -109,7 +109,7 @@
     <div>&nbsp;</div>
     <div style="padding: 12px; border: 1px solid silver; background-color: #f0f0f0;">
         <div style="font-size: 0.8em;">
-            テキストボックスにMMLを記入し、上記の「Download Audio」ボタンを押すと、Ogg-Orpus/WAVファイルをダウンロードできます。<br>
+            テキストボックスにMMLを記入し、上記の「Download Audio」ボタンを押すとダウンロードできます。<br>
             ブラウザ上でオーディオのレンダリングするので書き出しには時間がかかります。
         </div>
     </div>
