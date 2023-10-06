@@ -285,8 +285,7 @@ fn save_to_wav(mmlfile: &str, midifile: &str, wavfile: &str, soundfont: &str, de
         let samples = wav_io::resample::linear(samples, 2, sample_rate as u32, 16000).try_into().unwrap(); // wav_io::resample
         let samples = convert_samples_f32_to_i16(&samples);
         // let opus = ogg_encoder::encode::<16000, 2>(&samples).unwrap();
-        let opus = ogg_opus_wasm::encode::<16000, 2>(&samples).unwrap();
-
+        let opus = ogg_opus_wasm::encode(&samples);
         // ファイルを書き込みモードで開く
         let mut file = File::create(&wavfile).unwrap();
         // Vec<u8>のデータをファイルに書き込む
