@@ -1,6 +1,6 @@
 [package]
 name = "picosakura"
-version = "0.1.28"
+version = "0.1.29"
 edition = "2021"
 authors = ["kujirahand <web@kujirahand.com>"]
 description = "Picosakura mml player"
@@ -12,7 +12,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustysynth = "1.2.0"
-sakuramml = "0.1.28"
+sakuramml = "0.1.29"
 tinyaudio = "0.1.2"
 wav_io = "0.1.12"
 wasm-bindgen = "0.2"
