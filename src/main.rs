@@ -27,7 +27,7 @@ fn main() {
     let mut i = 1;
     while i < args.len() {
         let arg = args[i].clone();
-        if arg == "-h" || arg == "--help" {
+        if arg == "-h" || arg == "--help" || arg == "help" {
             println!("usage: picosakura [options] [mmlfile]");
             println!("options:");
             println!("  -h, --help      show this help");
