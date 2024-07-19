@@ -1,16 +1,14 @@
+extern crate wasm_bindgen;
+use wasm_bindgen::prelude::*;
+
 use sakuramml;
 use wav_io;
 use rustysynth::{SynthesizerSettings, Synthesizer, SoundFont, MidiFile, MidiFileSequencer};
 
-extern crate wasm_bindgen;
-use wasm_bindgen::prelude::*;
-
 const SAMPLE_RATE: usize = 44_100;
-
 
 /// Picosakura Result
 #[wasm_bindgen]
-// #[derive(Debug)]
 pub struct PicoResult {
     /// Result of compilation
     pub result: bool,
@@ -19,7 +17,7 @@ pub struct PicoResult {
     /// MIDI debug log
     log: String,
 }
-// #[wasm_bindgen]
+#[wasm_bindgen]
 impl PicoResult {
     /// Get MIDI binary data
     pub fn get_bin(&self) -> Vec<u8> {
@@ -33,7 +31,7 @@ impl PicoResult {
 
 /// Compile MML to MIDI
 #[wasm_bindgen]
-pub fn compile_to_midi(mml_source: &str) -> PicoResult {
+pub fn pico_compile_to_midi(mml_source: &str) -> PicoResult {
     let mut result = PicoResult {
         result: false,
         bin: Vec::new(),
@@ -64,7 +62,7 @@ pub fn make_wav_custom(mml_source: &str, soundfont: Vec<u8>, sample_rate: usize,
         bin: Vec::new(),
     };
     // MMLをMIDIに変換
-    let midi_result = compile_to_midi(mml_source);
+    let midi_result = pico_compile_to_midi(mml_source);
     if !midi_result.result { return midi_result; }
     result.log.push_str("compiled to midi\n");
     // Load soundfont
@@ -165,4 +163,3 @@ pub fn convert_samples_f32_to_i16(samples: &Vec<f32>) -> Vec<i16> {
     }
     samples_i16
 }
-
