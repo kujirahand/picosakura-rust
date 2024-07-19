@@ -60,7 +60,12 @@
 
     function makeWav(mml, out_format) {
         try {
-            worker.postMessage({type: 'makeWav', mml: mml, out_format: out_format});
+            // start to generate
+            worker.postMessage({
+                type: 'makeWav',
+                mml: mml,
+                out_format: out_format
+            });
         } catch (err) {
             console.error(err);
             document.getElementById('msg').innerHTML = '[SYSTEM_ERROR]' + tohtml(err.toString())
