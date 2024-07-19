@@ -1,10 +1,9 @@
-extern crate wasm_bindgen;
-
-use wasm_bindgen::prelude::*;
 use sakuramml;
 use wav_io;
 use rustysynth::{SynthesizerSettings, Synthesizer, SoundFont, MidiFile, MidiFileSequencer};
-// use ogg_opus_wasm;
+
+extern crate wasm_bindgen;
+use wasm_bindgen::prelude::*;
 
 const SAMPLE_RATE: usize = 44_100;
 
@@ -20,7 +19,7 @@ pub struct PicoResult {
     /// MIDI debug log
     log: String,
 }
-#[wasm_bindgen]
+// #[wasm_bindgen]
 impl PicoResult {
     /// Get MIDI binary data
     pub fn get_bin(&self) -> Vec<u8> {
@@ -133,22 +132,9 @@ pub fn make_wav_custom(mml_source: &str, soundfont: Vec<u8>, sample_rate: usize,
             return result;
         }
         //
-        result.log = format!("[ERROR] ogg-orpus: {}", "Not supported");
+        result.log = format!("[ERROR] ogg-orpus: Not supported");
         result.result = false;
         return result;
-        /*
-        match ogg_opus_wasm::encode::<16000, 2>(&samples) {
-            Ok(bytes) => {
-                result.result = true;
-                result.bin = bytes;
-            },
-            Err(e) => {
-                result.log = format!("[ERROR] ogg.encode: {}", e);
-                result.result = false;
-                return result;
-            }
-        }
-        */
     } else {
         match wav_io::write_to_bytes(&wav_head, &samples) {
             Ok(bytes) => {

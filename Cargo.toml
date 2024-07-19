@@ -1,6 +1,6 @@
 [package]
 name = "picosakura"
-version = "0.1.29"
+version = "0.1.32"
 edition = "2021"
 authors = ["kujirahand <web@kujirahand.com>"]
 description = "Picosakura mml player"
@@ -12,14 +12,12 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustysynth = "1.2.0"
-sakuramml = "0.1.29"
+sakuramml = "0.1.32"
 tinyaudio = "0.1.2"
 wav_io = "0.1.12"
 wasm-bindgen = "0.2"
-# for ogg-opus-support
-ogg-opus-wasm = "0.1.2"
 
-[profile.release]
-lto = true
-codegen-units = 1
-opt-level = "z"
+# [profile.release]
+# lto = true
+# codegen-units = 1
+# opt-level = "z"

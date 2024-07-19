@@ -2,11 +2,8 @@ use rustysynth::{SynthesizerSettings, Synthesizer, SoundFont, MidiFile, MidiFile
 use tinyaudio::prelude::*;
 use sakuramml;
 use std::env;
-use std::fs::File;
-use std::io::Write;
-use ogg_opus_wasm;
 
-const VERSION: &str = "0.1.0";
+const VERSION: &str = "0.1.31";
 const SAMPLE_RATE: usize = 44_100;
 const DEFUALT_SOUNDFONT: &str = "fonts/TimGM6mb.sf2";
 
@@ -36,7 +33,7 @@ fn main() {
             println!("  -s, --soundfont [soundfont]   specify soundfont file");
             println!("  -m, --midi      [ooo.mid]     specify midi file");
             println!("  -w, --wav       [ooo.wav]     specify wav file");
-            println!("  -o, --orpus     [ooo.opus]    specify ogg-orpus file");
+            // println!("  -o, --orpus     [ooo.opus]    specify ogg-orpus file");
             println!("  -b, --bit       8/16/24/32    specify wav bit");
             println!("  -r, --sample_rate [rate]      sample rate");
             return;
@@ -279,8 +276,10 @@ fn save_to_wav(mmlfile: &str, midifile: &str, wavfile: &str, soundfont: &str, de
         wav_io::write_to_file(&mut wav_out, &wav_head, &samples).unwrap();
     } else {
         // ogg mode
-        // OGGファイルへ保存
-        // let ogg_file: String = format!("{}.orpus", wavfile.replace(".wav", ""));
+        // TODO: OGGファイルへ保存
+        println!("[INFO] comming soon OGG mode");
+        /*
+        let ogg_file: String = format!("{}.orpus", wavfile.replace(".wav", ""));
         println!("[INFO] write to ogg-orpus file: {}", wavfile);
         let samples = wav_io::resample::linear(samples, 2, sample_rate as u32, 16000).try_into().unwrap(); // wav_io::resample
         let samples = convert_samples_f32_to_i16(&samples);
@@ -290,6 +289,7 @@ fn save_to_wav(mmlfile: &str, midifile: &str, wavfile: &str, soundfont: &str, de
         let mut file = File::create(&wavfile).unwrap();
         // Vec<u8>のデータをファイルに書き込む
         file.write_all(&opus).unwrap();
+        */
     }
 }
 
