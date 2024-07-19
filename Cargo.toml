@@ -1,6 +1,6 @@
 [package]
 name = "picosakura"
-version = "0.1.32"
+version = "0.1.33"
 edition = "2021"
 authors = ["kujirahand <web@kujirahand.com>"]
 description = "Picosakura mml player"
