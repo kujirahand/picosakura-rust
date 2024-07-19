@@ -6,12 +6,12 @@
 const URL_SOUNDFONT = '../fonts/TimGM6mb.sf2';
 // wasm path
 // import init, { PicoResult, make_wav, make_wav_custom } from 'https://cdn.jsdelivr.net/npm/picosakura@0.1.26/picosakura.js';
-import init, { PicoResult, make_wav, make_wav_custom } from '../pkg/picosakura.js';
+import init, { get_pico_version, get_sakura_version, PicoResult, make_wav, make_wav_custom } from '../pkg/picosakura.js';
 
 // load
 init().then(() => {
-    console.log('@loaded')
-    self.postMessage({ type: 'loaded' });
+    console.log('@loaded', get_pico_version(), get_sakura_version());
+    self.postMessage({ type: 'loaded', version: get_pico_version() });
 }).catch(err => {
     console.error(err);
     self.postMessage({ type: 'error', data: err.toString() });
@@ -33,6 +33,10 @@ self.addEventListener("message", (e) => {
             console.error(err);
             self.postMessage({ type: 'error', data: err.toString() });
         });
+    }
+    // hello
+    if (e.data.type === 'hello') {
+        self.postMessage({ type: 'hello', data: 'hello from worker' });
     }
 });
 

@@ -16,10 +16,12 @@
         const msg = document.getElementById('msg');
         const downloadLink = document.getElementById('download');
         const selectFormat = document.getElementById('selectFormat').value;
+        const version = document.getElementById('version');
         if (event.data.type === 'loaded') {
             console.log('worker loaded');
             btnSave.disabled = false;
             msg.innerHTML = '';
+            version.innerHTML = event.data.version;
             return;
         }
         if (event.data.type === 'error') {
@@ -99,8 +101,18 @@
         }
     });
     </script>
+    <style>
+        body { background-color: #f0f0ff; }
+        h1 { font-size: 1.5em; background-color: #fff0f0; padding: 12px; }
+        #btnSave { width: 20em; padding: 1em; }
+        .version { padding: 0.5em; font-size: 0.8em; text-align: right; }
+        #mml { width: 99%; }
+    </style>
     <div>
-        <h1>Picosakura WAV Converter (MML to WAV)</h1>
+        <h1>Picosakura WAV Converter</h1>
+        <div class="version">
+            picosakura <span id="version">???</span>
+        </div>
         <div>MML:<br><textarea id="mml" rows="10" cols="80">o4v120 cdefgfed</textarea></div>
         <div>Format: <select id="selectFormat">
             <!-- <option value="ogg">Ogg-Orpus</option> -->

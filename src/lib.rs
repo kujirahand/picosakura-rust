@@ -7,6 +7,17 @@ use rustysynth::{SynthesizerSettings, Synthesizer, SoundFont, MidiFile, MidiFile
 
 const SAMPLE_RATE: usize = 44_100;
 
+/// sakuramml version
+#[wasm_bindgen]
+pub fn get_pico_version() -> String {
+    format!("v{}", env!("CARGO_PKG_VERSION"))
+}
+#[wasm_bindgen]
+pub fn get_sakura_version() -> String {
+    let ver = sakuramml::get_version();
+    ver.to_string()
+}
+
 /// Picosakura Result
 #[wasm_bindgen]
 pub struct PicoResult {
