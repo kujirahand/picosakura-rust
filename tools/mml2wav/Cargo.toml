@@ -1,0 +1,11 @@
+[package]
+name = "mml2wav"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rustysynth = "1.2.0"
+sakuramml = "0.1.22"
+wav_io = "0.1.8"

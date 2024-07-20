@@ -8,8 +8,7 @@
 <body>
 <script type="module">
     // worker
-    const worker = new Worker('./wav_converter-worker.js', { type: "module" });
-    // const worker = {addEventListener: () => {}};
+    const worker = new Worker('./wav_converter-worker.js.php', { type: "module" });
     worker.addEventListener('message', (event) => {
         console.log("Data from worker received: ", event);
         const btnSave = document.getElementById('btnSave');
@@ -114,7 +113,7 @@
             picosakura <span id="version">???</span>
         </div>
         <div>MML:<br><textarea id="mml" rows="10" cols="80">o4v120 cdefgfed</textarea></div>
-        <div>Format: <select id="selectFormat">
+        <div style="padding: 1em;">Format: <select id="selectFormat">
             <!-- <option value="ogg">Ogg-Orpus</option> -->
             <option value="wav16">WAV 16bit</option>
             <option value="wav" selected>WAV 32bit</option>

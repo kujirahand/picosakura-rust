@@ -1,12 +1,15 @@
 //
-// picosakura-worker.js
+// picosakura-worker.tpl.js
 //
 
+console.log('picosakura-worker.tpl.js');
+
 // soundfont path
-const URL_SOUNDFONT = '../fonts/TimGM6mb.sf2';
+const URL_SOUNDFONT = '__SOUNDFONT__';
 // wasm path
-// import init, { PicoResult, make_wav, make_wav_custom } from 'https://cdn.jsdelivr.net/npm/picosakura@0.1.26/picosakura.js';
-import init, { get_pico_version, get_sakura_version, PicoResult, make_wav, make_wav_custom } from '../pkg/picosakura.js';
+import init, {
+    get_pico_version, get_sakura_version, PicoResult, make_wav, make_wav_custom
+} from '__PKG_URL__/picosakura.js';
 
 // load
 init().then(() => {
@@ -70,7 +73,7 @@ async function makeWav(mml, out_format) {
     }
     const log = result.get_log();
     const wav = result.get_bin();
-    return {wav, log}
+    return { wav, log }
 }
 
 /// load
