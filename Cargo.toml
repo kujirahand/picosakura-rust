@@ -8,6 +8,11 @@ license = "MIT"
 repository = "https://github.com/kujirahand/picosakura-rust"
 rust-version = "1.79.0"
 
+exclude = [
+    "/picosakura-pack",
+    "/samples/*.mid",
+    "/*.sh", "/*.bat", "/*.mid", "/*.mml"]
+
 [lib]
 crate-type = ["cdylib"]
 

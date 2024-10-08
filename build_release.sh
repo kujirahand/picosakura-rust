@@ -1,7 +1,7 @@
 #!/bin/bash
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
 TARGET=$SCRIPT_DIR/picosakura-pack
-ZIPFILE=picosakura-pack_macos.zip
+ZIPFILE=mac-picosakura-pack.zip
 
 # --- build ---
 # set root
