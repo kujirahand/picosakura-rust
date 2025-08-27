@@ -3,7 +3,7 @@ use tinyaudio::prelude::*;
 use sakuramml;
 use std::env;
 
-const VERSION: &str = "0.1.31";
+const VERSION: &str = "0.1.43";
 const SAMPLE_RATE: usize = 44_100;
 const DEFUALT_SOUNDFONT: &str = "fonts/TimGM6mb.sf2";
 
