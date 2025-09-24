@@ -12,12 +12,15 @@ def main():
     global filename
     layout = [
         [
-            eg.Button("New"),
-            eg.Button("Load"),
-            eg.Button("Save"),
+            eg.Button("New", key="New"),
             eg.Label("|"),
-            eg.Button("Play"),
-            eg.Button("Stop"),
+            eg.Button("Load", key="Load"),
+            eg.Button("Save", key="Save"),
+            eg.Label("|"),
+            eg.Button("♫ Play", key="Play"),
+            eg.Button("□ Stop", key="Stop"),
+            eg.Label("|"),
+            eg.Button("Export", key="Export"),
         ],
         [eg.Multiline("", size=(80, 30), key="-edit")],
     ]
@@ -32,6 +35,7 @@ def main():
         if event == "New":
             if eg.popup_yes_no("Are you sure you want to create a new file? Unsaved changes will be lost.") == "Yes":
                 window["-edit"].update("")
+                filename = None
                 continue
         if event == "Load":
             filename = eg.popup_get_file("Load File", no_window=True)
@@ -58,6 +62,9 @@ def main():
             continue
         if event == "Stop":
             stop_audio(window)
+            continue
+        if event == "Export":
+            export_audio(window)
 
     window.close()
 
@@ -88,6 +95,27 @@ def stop_audio(window):
     else:
         os.system("pkill picosakura")
 
+def export_audio(window):
+    global filename
+    mml = window["-edit"].get()
+    eg.popup("Please choose the export .WAV file location.")
+    export_filename = eg.popup_get_file("Export File", save_as=True, no_window=True, default_extension=".wav", file_types=(("WAV Files", "*.wav"), ("All Files", "*.*")))
+    if not export_filename:
+        return
+    # save mml
+    if filename is None:
+        filename = os.path.join(DIR_SCRIPT, "temp.mml")
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(mml)
+    except Exception as e:
+        eg.popup_error(f"Error exporting audio: {e}")
+        return
+    # export
+    cmd = f"\"{PICOSAKURA}\" -w \"{export_filename}\" -s \"{FONT}\" \"{filename}\""
+    print(f"Executing command: {cmd}") 
+    threading.Thread(target=run_command, args=(cmd,)).start()
+    eg.popup("Export started. Please check the output file when done.")
 
 if __name__ == "__main__":
     main()
