@@ -64,15 +64,32 @@ Options:
 
 ## Choosing the MML compiler
 
-The MML compiler is selected at build time with a cargo feature (see issue #3).
+Picosakura can link one of two MML compilers. The choice is made at build time with a cargo feature (see [issue #3](https://github.com/kujirahand/picosakura-rust/issues/3)).
 
-- `sakuramml` (default): the `sakuramml` package
-- `sakuramml-v2`: the `sakuramml-v2` package (a faithful port of the Pascal version)
+| Feature | Package | Notes |
+|---|---|---|
+| `sakuramml` (default) | [sakuramml](https://crates.io/crates/sakuramml) | The current compiler (sakuramml-rust) |
+| `sakuramml-v2` | [sakuramml-v2](https://crates.io/crates/sakuramml-v2) | A faithful port of the Pascal version |
 
 ```sh
-cargo build --release                                              # sakuramml
-cargo build --release --no-default-features --features sakuramml-v2   # sakuramml-v2
-make wasm-v2                                                       # WASM with sakuramml-v2
+# sakuramml (default)
+cargo build --release
+wasm-pack build --target web --release   # or: make wasm
+
+# sakuramml-v2
+cargo build --release --no-default-features --features sakuramml-v2
+wasm-pack build --target web --release --no-default-features --features sakuramml-v2   # or: make wasm-v2
 ```
 
-Only one can be linked; enabling both is a compile error (linking both makes the WASM about 400KB larger).
+### How it works
+
+- `Cargo.toml` declares both compilers as optional dependencies. `default = ["sakuramml"]`, so a plain build links only `sakuramml`. To use v2, disable the default features with `--no-default-features`.
+- `src/compiler.rs` is the only file that touches the compiler packages. It provides `get_version()` and `compile(mml, debug_level)` for each feature, selected with `#[cfg(feature = "...")]`. `src/lib.rs` (WASM) and `src/main.rs` (CLI) call only this module.
+- Only one compiler can be linked. Enabling both, or neither, is a compile error.
+- Linking only one keeps the WASM small. Linking both makes it about 400KB larger (raw size: 533KB with `sakuramml`, 602KB with `sakuramml-v2`, 970KB with both).
+
+### Differences with `sakuramml-v2`
+
+- The debug level (`-d`) is ignored.
+- `--version` prints a fixed string, because `sakuramml-v2` has no version function.
+- Warnings are shown in the log as `[警告] ...`.
