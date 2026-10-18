@@ -1,7 +1,7 @@
 extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
 
-use sakuramml;
+mod compiler;
 use wav_io;
 use rustysynth::{SynthesizerSettings, Synthesizer, SoundFont, MidiFile, MidiFileSequencer};
 
@@ -14,8 +14,7 @@ pub fn get_pico_version() -> String {
 }
 #[wasm_bindgen]
 pub fn get_sakura_version() -> String {
-    let ver = sakuramml::get_version();
-    ver.to_string()
+    compiler::get_version()
 }
 
 /// Picosakura Result
@@ -52,15 +51,12 @@ pub fn pico_compile_to_midi(mml_source: &str) -> PicoResult {
         result.log = "[ERROR] MML source is empty".to_string();
         return result;
     }
-    let mut sakura = sakuramml::SakuraCompiler::new();
-    let midi = sakura.compile(&mml_source);
-    let log = sakura.get_log();
-    result.log = log.clone();
-    if log.contains("ERROR") {
-        return result
+    let compiled = compiler::compile(mml_source, 0);
+    result.log = compiled.log;
+    if let Some(midi) = compiled.midi {
+        result.result = true;
+        result.bin = midi;
     }
-    result.result = true;
-    result.bin = midi;
     return result
 }
 

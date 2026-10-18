@@ -61,3 +61,18 @@ Options:
   -h, --help                   Print help
 ```
 
+
+## Choosing the MML compiler
+
+The MML compiler is selected at build time with a cargo feature (see issue #3).
+
+- `sakuramml` (default): the `sakuramml` package
+- `sakuramml-v2`: the `sakuramml-v2` package (a faithful port of the Pascal version)
+
+```sh
+cargo build --release                                              # sakuramml
+cargo build --release --no-default-features --features sakuramml-v2   # sakuramml-v2
+make wasm-v2                                                       # WASM with sakuramml-v2
+```
+
+Only one can be linked; enabling both is a compile error (linking both makes the WASM about 400KB larger).
