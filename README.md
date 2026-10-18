@@ -62,6 +62,40 @@ Options:
 ```
 
 
+## Build
+
+### Command line version
+
+Requirements: [Rust](https://www.rust-lang.org/tools/install) (cargo).
+
+```sh
+git clone https://github.com/kujirahand/picosakura-rust
+cd picosakura-rust
+cargo build --release
+```
+
+The binary is created at `target/release/picosakura`. The default SoundFont is `fonts/TimGM6mb.sf2` (relative to the current directory), so run it from the repository root or specify one with `--soundfont`.
+
+```sh
+./target/release/picosakura samples/sakura2.mml
+```
+
+To make a release package (macOS), run `./build_release.sh`. It creates `picosakura-pack/` and `mac-picosakura-pack.zip`. On Windows, use `build_release.bat`.
+
+### WASM version
+
+Requirements: Rust, the `wasm32-unknown-unknown` target and [wasm-pack](https://rustwasm.github.io/wasm-pack/).
+
+```sh
+rustup target add wasm32-unknown-unknown
+cargo install wasm-pack
+make wasm        # same as: wasm-pack build --target web --release
+```
+
+The output is created in `pkg/` (`picosakura_bg.wasm`, `picosakura.js`, ...). If [binaryen](https://github.com/WebAssembly/binaryen) (`wasm-opt`) is installed, `wasm-pack` also optimizes the WASM, but the size gain is only about 1%.
+
+To select the MML compiler, see the next section.
+
 ## Choosing the MML compiler
 
 Picosakura can link one of two MML compilers. The choice is made at build time with a cargo feature (see [issue #3](https://github.com/kujirahand/picosakura-rust/issues/3)).
