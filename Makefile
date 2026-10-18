@@ -6,6 +6,10 @@ all: build_picogui
 wasm:
 	wasm-pack build --target web --release
 
+# sakuramml-v2 compiler (default is sakuramml)
+wasm-v2:
+	wasm-pack build --target web --release --no-default-features --features sakuramml-v2
+
 # Copy files
 build_picogui:
 	mkdir -p tools/picogui/bin/fonts

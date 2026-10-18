@@ -1,6 +1,6 @@
 use rustysynth::{SynthesizerSettings, Synthesizer, SoundFont, MidiFile, MidiFileSequencer};
 use tinyaudio::prelude::*;
-use sakuramml;
+mod compiler;
 use std::env;
 
 const VERSION: &str = "0.1.43";
@@ -98,7 +98,7 @@ fn main() {
     // version
     if version {
         println!("- picosakura v{}", VERSION);
-        println!("  - compiler v{}", sakuramml::get_version());
+        println!("  - compiler v{}", compiler::get_version());
         return;
     }
     // check input
@@ -146,18 +146,19 @@ fn compile_to_midi(mmlfile: &str, midifile: &str, debug_level: u32) -> bool {
     });
     println!("[INFO] compile mml to midi");
     if mml_source == "" { return false; }
-    let mut sakura = sakuramml::SakuraCompiler::new();
-    sakura.set_debug_level(debug_level);
-    let midi = sakura.compile(&mml_source);
-    let log = sakura.get_log();
-    if log.contains("ERROR") {
-        println!("[ERROR] Failed to compile\n{}", log);
-        return false;
-    } else {
-        if log != "" {
-            println!("{}", log);
+    let compiled = compiler::compile(&mml_source, debug_level);
+    let midi = match compiled.midi {
+        Some(midi) => {
+            if compiled.log != "" {
+                println!("{}", compiled.log);
+            }
+            midi
         }
-    }
+        None => {
+            println!("[ERROR] Failed to compile\n{}", compiled.log);
+            return false;
+        }
+    };
     // MIDIファイルを保存
     std::fs::write(midifile, midi).unwrap();
     true

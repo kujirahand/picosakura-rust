@@ -61,3 +61,69 @@ Options:
   -h, --help                   Print help
 ```
 
+
+## Build
+
+### Command line version
+
+Requirements: [Rust](https://www.rust-lang.org/tools/install) (cargo).
+
+```sh
+git clone https://github.com/kujirahand/picosakura-rust
+cd picosakura-rust
+cargo build --release
+```
+
+The binary is created at `target/release/picosakura`. The default SoundFont is `fonts/TimGM6mb.sf2` (relative to the current directory), so run it from the repository root or specify one with `--soundfont`.
+
+```sh
+./target/release/picosakura samples/sakura2.mml
+```
+
+To make a release package (macOS), run `./build_release.sh`. It creates `picosakura-pack/` and `mac-picosakura-pack.zip`. On Windows, use `build_release.bat`.
+
+### WASM version
+
+Requirements: Rust, the `wasm32-unknown-unknown` target and [wasm-pack](https://rustwasm.github.io/wasm-pack/).
+
+```sh
+rustup target add wasm32-unknown-unknown
+cargo install wasm-pack
+make wasm        # same as: wasm-pack build --target web --release
+```
+
+The output is created in `pkg/` (`picosakura_bg.wasm`, `picosakura.js`, ...). If [binaryen](https://github.com/WebAssembly/binaryen) (`wasm-opt`) is installed, `wasm-pack` also optimizes the WASM, but the size gain is only about 1%.
+
+To select the MML compiler, see the next section.
+
+## Choosing the MML compiler
+
+Picosakura can link one of two MML compilers. The choice is made at build time with a cargo feature (see [issue #3](https://github.com/kujirahand/picosakura-rust/issues/3)).
+
+| Feature | Package | Notes |
+|---|---|---|
+| `sakuramml` (default) | [sakuramml](https://crates.io/crates/sakuramml) | The current compiler (sakuramml-rust) |
+| `sakuramml-v2` | [sakuramml-v2](https://crates.io/crates/sakuramml-v2) | A faithful port of the Pascal version |
+
+```sh
+# sakuramml (default)
+cargo build --release
+wasm-pack build --target web --release   # or: make wasm
+
+# sakuramml-v2
+cargo build --release --no-default-features --features sakuramml-v2
+wasm-pack build --target web --release --no-default-features --features sakuramml-v2   # or: make wasm-v2
+```
+
+### How it works
+
+- `Cargo.toml` declares both compilers as optional dependencies. `default = ["sakuramml"]`, so a plain build links only `sakuramml`. To use v2, disable the default features with `--no-default-features`.
+- `src/compiler.rs` is the only file that touches the compiler packages. It provides `get_version()` and `compile(mml, debug_level)` for each feature, selected with `#[cfg(feature = "...")]`. `src/lib.rs` (WASM) and `src/main.rs` (CLI) call only this module.
+- Only one compiler can be linked. Enabling both, or neither, is a compile error.
+- Linking only one keeps the WASM small. Linking both makes it about 400KB larger (raw size: 533KB with `sakuramml`, 602KB with `sakuramml-v2`, 970KB with both).
+
+### Differences with `sakuramml-v2`
+
+- The debug level (`-d`) is ignored.
+- `--version` prints a fixed string, because `sakuramml-v2` has no version function.
+- Warnings are shown in the log as `[警告] ...`.
